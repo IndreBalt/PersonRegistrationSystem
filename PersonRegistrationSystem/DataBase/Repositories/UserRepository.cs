@@ -9,6 +9,7 @@ namespace PersonRegistrationSystem.DataBase.Repositories
         void DeleteUser(Guid id);
         User GetUserById(Guid id);
         User? GetUserByUserName(string userName);
+        List<User> GetUsers();
         User UpdateUser(User user);
     }
     public class UserRepository: IUserRepository
@@ -21,18 +22,26 @@ namespace PersonRegistrationSystem.DataBase.Repositories
 
         public Guid CreateUser(User user)
         {
-            _context.Users.Add(user);  
+            if(_context.Users.Any(u => u.UserName == user.UserName))
+            {
+                throw new ArgumentException("User already exists");
+            }
+            _context.Users.Add(user);            
             _context.SaveChanges();
             return user.Id;
         }
-        public ICollection<User> GetUsers()
+        public List<User> GetUsers()
         { 
-            
-            return
+            var users = _context.Users.Include(p => p.PersonalInfo).ThenInclude(a => a.Address).ToList();
+            if (users.Any())
+            { 
+                return users;
+            }
+            return null;
         }
 
         public User? GetUserById(Guid id)
-        {
+        { 
             var user = _context.Users.Include(p => p.PersonalInfo).ThenInclude(a => a.Address).FirstOrDefault(x => x.Id == id);
             if (user == null) 
             {

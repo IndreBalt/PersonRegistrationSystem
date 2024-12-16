@@ -9,6 +9,7 @@ namespace PersonRegistrationSystem.Mappers
     {
         User Map(UserRequestDto req);
         UserResponceDto Map(User user);
+        List<UserResponceDto> Map(List<User> users);
     }
     public class UserMapper: IUserMapper
     {
@@ -35,6 +36,7 @@ namespace PersonRegistrationSystem.Mappers
         {
             return new UserResponceDto()
             {
+                Id = user.Id,
                 UserName = user.UserName,
                 PersonalInfo = new PersonalInfoResponceDto
                 {
@@ -54,7 +56,11 @@ namespace PersonRegistrationSystem.Mappers
                 }
             };
         }
-    
+        public List<UserResponceDto> Map(List<User> users) 
+        {
+            return users.Select(u =>Map(u)).ToList();
+        }
+
 
     }
 

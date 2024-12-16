@@ -10,14 +10,13 @@ namespace PersonRegistrationSystem.Dtos.RequestsDtos
         [Required]
         public string LastName { get; set; }
         [Required]
-        public int PersonalId { get; set; }
+        public long PersonalId { get; set; }
         [Required]
         public int PhoneNumber { get; set; }
         [Required]
         public string Email { get; set; }
         [Required]
         public IFormFile ProfilePhoto { get; set; }
-        [Required]
         public LivingAddressDto Address { get; set; }
     }
 }

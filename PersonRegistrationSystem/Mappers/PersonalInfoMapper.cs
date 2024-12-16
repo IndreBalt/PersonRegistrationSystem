@@ -13,6 +13,7 @@ namespace PersonRegistrationSystem.Mappers
     {
         private readonly IAddressMapper _addressMapper;
         private readonly IPhotoService _photoService;
+        
 
         public PersonalInfoMapper(IAddressMapper addressMapper, IPhotoService photoService)
         {
@@ -22,11 +23,7 @@ namespace PersonRegistrationSystem.Mappers
 
         public PersonalInfo Map(PersonalInfoRequestDto personalInfoDto)
         {
-            var img = _photoService.ResizePhoto(personalInfoDto.ProfilePhoto);
-            using var stream = new MemoryStream();
-            img.Save(stream, ImageFormat.Png);
-            var photoBytes = stream.ToArray();
-
+            var photoBytes = _photoService.PhotoToBytes(personalInfoDto.ProfilePhoto);
             return new PersonalInfo()
             {
                 FirstName = personalInfoDto.FirstName,

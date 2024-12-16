@@ -30,16 +30,19 @@ namespace PersonRegistrationSystem.Controllers
             _jwtService = jwtService;
 
         }
+
         [HttpPost("Registration")]
         public IActionResult CreateUser([FromForm] UserRequestDto user)
         {
             User newUser = _userMapper.Map(user);
             var userId = _userRepository.CreateUser(newUser);
-            return Created("", new {id = userId});
+            return Created("", new { id = userId });
         }
+
+
         [HttpGet("LogIn")]
-        public IActionResult LogIn([FromQuery]string username, string password)
-        {          
+        public IActionResult LogIn([FromQuery] string username, string password)
+        {
             User user = _userService.LogIn(username, password);
             if (user is null)
             {
@@ -48,6 +51,7 @@ namespace PersonRegistrationSystem.Controllers
             string token = _jwtService.JwtToken(user);
             return Ok(token);
         }
+
         [HttpGet("GetUserByUserName")]
         public IActionResult GetUserByUserName(string userName, string password)
         {
@@ -55,6 +59,9 @@ namespace PersonRegistrationSystem.Controllers
             var result = _userMapper.Map(user);
             return Ok(result);
         }
+
+
+        [Authorize(Roles = "User")]
         [HttpGet("GetUserById")]
         public IActionResult GetUserById(Guid id)
         {
@@ -62,7 +69,8 @@ namespace PersonRegistrationSystem.Controllers
             var result = _userMapper.Map(user);
             return Ok(result);
         }
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "User", Policy = "userId")]
+
+        [Authorize]        
         [HttpGet("GetPhotoById")]
         public IActionResult GetUserPhotoById(Guid id)
         {
@@ -70,24 +78,35 @@ namespace PersonRegistrationSystem.Controllers
             var img = File(user.PersonalInfo.ProfilePhoto, "image/jpeg");           
             return img;
         }
+
         
-        
-        [HttpPut("{id:guid}/AddPersonalInfo")]
-        public IActionResult AddUserPersonalInfo(Guid id,[FromForm] PersonalInfoRequestDto personalInfo)
-        {
-            var user = _userRepository.GetUserById(id);
-            var personInfo = _personalInfoMapper.Map(personalInfo);
-            user.PersonalInfo = personInfo;
-            _userRepository.UpdateUser(user);
-            return Ok(user);                        
-        }
+        //[HttpPut("{id:guid}/AddPersonalInfo")]
+        //public IActionResult AddUserPersonalInfo(Guid id,[FromBody] PersonalInfoRequestDto personalInfo)
+        //{
+        //    var user = _userRepository.GetUserById(id);
+        //    var personInfo = _personalInfoMapper.Map(personalInfo);
+        //    user.PersonalInfo = personInfo;
+        //    _userRepository.UpdateUser(user);
+        //    return Ok(user);                        
+        //}
         [HttpDelete("{id:guid}")]
-        public IActionResult DeleteUSer(Guid id)
+        [Authorize(Roles = "Admin")]
+        public IActionResult DeleteUSer([FromRoute]Guid id)
         {
             _userRepository.DeleteUser(id);
             return NoContent();
 
         }
+        [HttpGet("Users")]
+        [Authorize(Roles = "Admin")]
+        public IActionResult GetAllUsers() 
+        {
+            var users = _userRepository.GetUsers();
+            var result = _userMapper.Map(users);    
+            return Ok(result);
+        }
+     
+
 
         
     }

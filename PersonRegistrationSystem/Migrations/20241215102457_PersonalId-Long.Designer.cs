@@ -12,8 +12,8 @@ using PersonRegistrationSystem.DataBase;
 namespace PersonRegistrationSystem.Migrations
 {
     [DbContext(typeof(UserDbContext))]
-    [Migration("20241203192243_InitialData")]
-    partial class InitialData
+    [Migration("20241215102457_PersonalId-Long")]
+    partial class PersonalIdLong
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -75,8 +75,8 @@ namespace PersonRegistrationSystem.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("PersonalId")
-                        .HasColumnType("int");
+                    b.Property<long>("PersonalId")
+                        .HasColumnType("bigint");
 
                     b.Property<int>("PhoneNumber")
                         .HasColumnType("int");
@@ -102,7 +102,7 @@ namespace PersonRegistrationSystem.Migrations
                         .IsRequired()
                         .HasColumnType("varbinary(max)");
 
-                    b.Property<int?>("PersonalInfoId")
+                    b.Property<int>("PersonalInfoId")
                         .HasColumnType("int");
 
                     b.Property<string>("Role")
@@ -139,7 +139,9 @@ namespace PersonRegistrationSystem.Migrations
                 {
                     b.HasOne("PersonRegistrationSystem.DataBase.Entities.PersonalInfo", "PersonalInfo")
                         .WithMany()
-                        .HasForeignKey("PersonalInfoId");
+                        .HasForeignKey("PersonalInfoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("PersonalInfo");
                 });

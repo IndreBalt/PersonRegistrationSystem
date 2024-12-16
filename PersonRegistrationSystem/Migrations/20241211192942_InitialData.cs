@@ -61,7 +61,7 @@ namespace PersonRegistrationSystem.Migrations
                     Password = table.Column<byte[]>(type: "varbinary(max)", nullable: false),
                     Salt = table.Column<byte[]>(type: "varbinary(max)", nullable: false),
                     Role = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    PersonalInfoId = table.Column<int>(type: "int", nullable: true)
+                    PersonalInfoId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -70,7 +70,8 @@ namespace PersonRegistrationSystem.Migrations
                         name: "FK_Users_PersonalInfo_PersonalInfoId",
                         column: x => x.PersonalInfoId,
                         principalTable: "PersonalInfo",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
