@@ -7,9 +7,9 @@ namespace PersonRegistrationSystem.DataBase.Repositories
     {
         Guid CreateUser(User user);
         void DeleteUser(Guid id);
-        User GetUserById(Guid id);
+        User? GetUserById(Guid id);
         User? GetUserByUserName(string userName);
-        List<User> GetUsers();
+        List<User>? GetUsers();
         User UpdateUser(User user);
     }
     public class UserRepository: IUserRepository
@@ -30,10 +30,10 @@ namespace PersonRegistrationSystem.DataBase.Repositories
             _context.SaveChanges();
             return user.Id;
         }
-        public List<User> GetUsers()
+        public List<User>? GetUsers()
         { 
             var users = _context.Users.Include(p => p.PersonalInfo).ThenInclude(a => a.Address).ToList();
-            if (users.Any())
+            if (users.Any() && users is not null)
             { 
                 return users;
             }
@@ -43,11 +43,11 @@ namespace PersonRegistrationSystem.DataBase.Repositories
         public User? GetUserById(Guid id)
         { 
             var user = _context.Users.Include(p => p.PersonalInfo).ThenInclude(a => a.Address).FirstOrDefault(x => x.Id == id);
-            if (user == null) 
+            if (user is not null) 
             {
-                return null;
+                return user;
             }
-            return user;
+            return null;
         }
         public User? GetUserByUserName(string userName) 
         {
@@ -68,12 +68,16 @@ namespace PersonRegistrationSystem.DataBase.Repositories
         public void DeleteUser(Guid id)
         { 
             var user = GetUserById(id);
-            var personinfo = user.PersonalInfo;
-            var address = personinfo.Address;
-            _context.Users.Remove(user);
-            _context.PersonalInfo.Remove(personinfo);
-            _context.LivingAddresses.Remove(address);
-            _context.SaveChanges();
+            if(user is not null)
+            {
+                var personinfo = user.PersonalInfo;
+                var address = personinfo.Address;
+                _context.Users.Remove(user);
+                _context.PersonalInfo.Remove(personinfo);
+                _context.LivingAddresses.Remove(address);
+                _context.SaveChanges();
+            }
+            
         }
 
 

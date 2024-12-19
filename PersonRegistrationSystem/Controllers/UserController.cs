@@ -1,7 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using PersonRegistrationSystem.DataBase.Entities;
 using PersonRegistrationSystem.DataBase.Repositories;
@@ -34,6 +32,10 @@ namespace PersonRegistrationSystem.Controllers
         [HttpPost("Registration")]
         public IActionResult CreateUser([FromForm] UserRequestDto user)
         {
+            if (_userRepository.GetUserByUserName(user.UserName) is not null)
+            {
+                return Conflict("User already exists");
+            }
             User newUser = _userMapper.Map(user);
             var userId = _userRepository.CreateUser(newUser);
             return Created("", new { id = userId });
@@ -43,7 +45,7 @@ namespace PersonRegistrationSystem.Controllers
         [HttpGet("LogIn")]
         public IActionResult LogIn([FromQuery] string username, string password)
         {
-            User user = _userService.LogIn(username, password);
+            var user = _userService.LogIn(username, password);
             if (user is null)
             {
                 return BadRequest("Bad username or password");
@@ -53,11 +55,15 @@ namespace PersonRegistrationSystem.Controllers
         }
 
         [HttpGet("GetUserByUserName")]
-        public IActionResult GetUserByUserName(string userName, string password)
+        public IActionResult GetUserByUserName(string userName)
         {
-            var user = _userService.LogIn(userName, password);
-            var result = _userMapper.Map(user);
-            return Ok(result);
+            var user = _userRepository.GetUserByUserName(userName);
+            if (user is not null)
+            {
+                var result = _userMapper.Map(user);
+                return Ok(result);
+            }
+            return NotFound();
         }
 
 
@@ -66,8 +72,12 @@ namespace PersonRegistrationSystem.Controllers
         public IActionResult GetUserById(Guid id)
         {
             var user = _userRepository.GetUserById(id);
-            var result = _userMapper.Map(user);
-            return Ok(result);
+            if(user is not null)
+            {
+                var result = _userMapper.Map(user);
+                return Ok(result);
+            }
+            return NotFound();
         }
 
         [Authorize]        
@@ -75,20 +85,15 @@ namespace PersonRegistrationSystem.Controllers
         public IActionResult GetUserPhotoById(Guid id)
         {
             var user = _userRepository.GetUserById(id);
-            var img = File(user.PersonalInfo.ProfilePhoto, "image/jpeg");           
-            return img;
+            if (user is not null)
+            {
+                var img = File(user.PersonalInfo.ProfilePhoto, "image/jpeg");
+                return img;
+            }
+            return NotFound();
         }
 
-        
-        //[HttpPut("{id:guid}/AddPersonalInfo")]
-        //public IActionResult AddUserPersonalInfo(Guid id,[FromBody] PersonalInfoRequestDto personalInfo)
-        //{
-        //    var user = _userRepository.GetUserById(id);
-        //    var personInfo = _personalInfoMapper.Map(personalInfo);
-        //    user.PersonalInfo = personInfo;
-        //    _userRepository.UpdateUser(user);
-        //    return Ok(user);                        
-        //}
+       
         [HttpDelete("{id:guid}")]
         [Authorize(Roles = "Admin")]
         public IActionResult DeleteUSer([FromRoute]Guid id)
@@ -102,8 +107,12 @@ namespace PersonRegistrationSystem.Controllers
         public IActionResult GetAllUsers() 
         {
             var users = _userRepository.GetUsers();
-            var result = _userMapper.Map(users);    
-            return Ok(result);
+            if(users is not null)
+            {
+                var result = _userMapper.Map(users);
+                return Ok(result);
+            }
+            return NoContent();
         }
      
 

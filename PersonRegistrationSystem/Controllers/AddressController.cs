@@ -22,17 +22,26 @@ namespace PersonRegistrationSystem.Controllers
         public IActionResult UpdateCity(Guid userId, string city)
         {
             var identity = HttpContext.User.Identity as ClaimsIdentity;
-            if (identity != null)
+            if(identity is not null)
             {
-                var tokenId = identity.FindFirst("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier").Value;
-                if (tokenId == userId.ToString())
+                var tokenId = identity.FindFirst("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier");
+                if (tokenId is not null)
                 {
-                    var user = _userRepository.GetUserById(userId);
-                    user.PersonalInfo.Address.City = city;
-                    _userRepository.UpdateUser(user);
-                    return Ok(user.PersonalInfo.Address.City);
+
+                    if (tokenId.Value == userId.ToString())
+                    {
+                        var user = _userRepository.GetUserById(userId);
+                        if(user is not null)
+                        {
+                            user.PersonalInfo.Address.City = city;
+                            _userRepository.UpdateUser(user);
+                            return Ok(user.PersonalInfo.Address.City);
+                        }
+                        
+                    }
                 }
             }
+            
             return Forbid();
 
         }
@@ -43,15 +52,22 @@ namespace PersonRegistrationSystem.Controllers
         public IActionResult UpdateStreet(Guid userId, string street)
         {
             var identity = HttpContext.User.Identity as ClaimsIdentity;
-            if (identity != null)
+            if (identity is not null)
             {
-                var tokenId = identity.FindFirst("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier").Value;
-                if (tokenId == userId.ToString())
+                var tokenId = identity.FindFirst("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier");
+                if (tokenId is not null)
                 {
-                    var user = _userRepository.GetUserById(userId);
-                    user.PersonalInfo.Address.Street = street;
-                    _userRepository.UpdateUser(user);
-                    return Ok(user.PersonalInfo.Address.Street);
+
+                    if (tokenId.Value == userId.ToString())
+                    {
+                        var user = _userRepository.GetUserById(userId);
+                        if (user is not null)
+                        {
+                            user.PersonalInfo.Address.Street = street;
+                            _userRepository.UpdateUser(user);
+                            return Ok(user.PersonalInfo.Address.Street);
+                        }
+                    }
                 }
             }
             return Forbid();
@@ -63,15 +79,22 @@ namespace PersonRegistrationSystem.Controllers
         public IActionResult UpdateHouseNumber(Guid userId, int houseNumber)
         {
             var identity = HttpContext.User.Identity as ClaimsIdentity;
-            if (identity != null)
+            if (identity is not null)
             {
-                var tokenId = identity.FindFirst("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier").Value;
-                if (tokenId == userId.ToString())
+                var tokenId = identity.FindFirst("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier");
+                if (tokenId is not null)
                 {
-                    var user = _userRepository.GetUserById(userId);
-                    user.PersonalInfo.Address.HouseNumber = houseNumber;
-                    _userRepository.UpdateUser(user);
-                    return Ok(user.PersonalInfo.Address.HouseNumber);
+
+                    if (tokenId.Value == userId.ToString())
+                    {
+                        var user = _userRepository.GetUserById(userId);
+                        if (user is not null)
+                        {
+                            user.PersonalInfo.Address.HouseNumber = houseNumber;
+                            _userRepository.UpdateUser(user);
+                            return Ok(user.PersonalInfo.Address.HouseNumber);
+                        }
+                    }
                 }
             }
             return Forbid();
@@ -83,15 +106,22 @@ namespace PersonRegistrationSystem.Controllers
         public IActionResult UpdateApartmentNumber(Guid userId, int apartmentNumber)
         {
             var identity = HttpContext.User.Identity as ClaimsIdentity;
-            if (identity != null)
+            if (identity is not null)
             {
-                var tokenId = identity.FindFirst("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier").Value;
-                if (tokenId == userId.ToString())
+                var tokenId = identity.FindFirst("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier");
+                if (tokenId is not null)
                 {
-                    var user = _userRepository.GetUserById(userId);
-                    user.PersonalInfo.Address.ApartmentNumber = apartmentNumber;
-                    _userRepository.UpdateUser(user);
-                    return Ok(user.PersonalInfo.Address.ApartmentNumber);
+
+                    if (tokenId.Value == userId.ToString())
+                    {
+                        var user = _userRepository.GetUserById(userId);
+                        if (user is not null)
+                        {
+                            user.PersonalInfo.Address.ApartmentNumber = apartmentNumber;
+                            _userRepository.UpdateUser(user);
+                            return Ok(user.PersonalInfo.Address.ApartmentNumber);
+                        }
+                    }
                 }
             }
             return Forbid();
